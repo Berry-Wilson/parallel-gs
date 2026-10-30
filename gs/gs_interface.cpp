@@ -4340,10 +4340,12 @@ void GSInterface::gif_transfer(uint32_t path_index, const void *data, size_t siz
 		}
 		else
 		{
-			if (path.reg == 0 && optimized_draw_handler[path_index])
+			// Only take the fast path for whole loops still in this transfer. A transfer can end
+			// mid-primitive; the remainder goes through the per-register path below.
+			if (path.reg == 0 && optimized_draw_handler[path_index] && (size - i) >= nreg)
 			{
 				// Should this divide be optimized to use divide by constant trick?
-				uint32_t nloops_to_run = std::min<uint32_t>(size / nreg, path.tag.NLOOP - path.loop);
+				uint32_t nloops_to_run = std::min<uint32_t>(uint32_t((size - i) / nreg), path.tag.NLOOP - path.loop);
 				(this->*optimized_draw_handler[path_index])(&qwords[i], nloops_to_run);
 				i += nloops_to_run * nreg;
 				path.loop += nloops_to_run;

@@ -264,6 +264,7 @@ public:
 
 	// GIF payload format.
 	void gif_transfer(uint32_t path, const void *data, size_t size);
+	void a_d_HWREG_multi(const uint64_t *payload, size_t count);
 
 	// Manually tickle register state and perform any work associated with accessing said register.
 	void write_register(RegisterAddr addr, uint64_t payload);
@@ -610,7 +611,7 @@ private:
 	PageRect compute_z_rect() const;
 
 	GIFPath paths[4] = {};
-	void a_d_HWREG_multi(const uint64_t *payload, size_t count);
+	
 
 	void update_color_feedback_state();
 
