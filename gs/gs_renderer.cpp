@@ -902,11 +902,12 @@ void GSRenderer::check_flush_stats()
 #endif
 		tracker.mark_memory_pressure();
 	}
-	else if (pending_copies.size() >= MaxPendingCopiesWithoutFlush || stats.num_copy_threads >= MaxPendingCopyThreads)
-	{
-		// Deal with soft limits. We have to flush since our algorithms need it, not because of pressure.
+
+	// Deal with soft limits. We have to flush since our algorithms need it, not because of pressure.
+	// This must also happen under memory pressure: that flush is deferred, and flush_transfer() sorts
+	// the pending copies in stack arrays of MaxPendingCopiesWithoutFlush entries.
+	if (pending_copies.size() >= MaxPendingCopiesWithoutFlush || stats.num_copy_threads >= MaxPendingCopyThreads)
 		flush_transfer();
-	}
 }
 
 static VkDeviceSize align_offset(VkDeviceSize offset, VkDeviceSize align)
